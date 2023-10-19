@@ -1,5 +1,5 @@
 
-const fs = require('fs'); 
+import fs from 'fs'
 
 
 
@@ -106,7 +106,7 @@ class ProductManager {
     }
 }
 
-const productMAnager = new ProductManager('../../products.json')
+const productManager = new ProductManager('../products.json')
 
-export default ProductManager
+export default ProductManager;
 

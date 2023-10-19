@@ -1,8 +1,9 @@
-import productManager from '../classes/ProductManager';
-import { Router } from "express";
+import productManager from '../classes/ProductManager.js';
+import express from "express";
+import bodyParser from 'body-parser';
 
-const routerProducts = Router();
-const fs = require('fs')
+const routerProducts = express.Router();
+
 routerProducts.use(bodyParser.json());
 
 

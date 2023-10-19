@@ -1,7 +1,7 @@
 import express from 'express';
-import routerCarts from './routes/carts';
-import routerProducts from './routes/products';
-import __dirname from './utils';
+import routerCarts from './routes/carts.js';
+import routerProducts from './routes/products.js';
+import __dirname from './utils.js';
 
 const app = express();
 const puerto = 8080;

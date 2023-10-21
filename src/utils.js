@@ -2,20 +2,21 @@ import express from 'express';
 import multer from 'multer';
 import {fileURLToPath} from 'url'
 import { dirname } from 'path';
+import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
 
-app.use(express.urlencoded({extend: true}));
+app.use(express.urlencoded({ extended: true }));
+
 app.use(express.static('public'));
 
 const storage = multer.diskStorage({
 
-    destination: function (req, file, cb){
-
-            cb(null, 'uploads');
-    },
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, 'public', 'img'));
+    },    
     filename: function(req, file, cb){
         cb(null, `${Date.now()}-${file.originalname}`);
 

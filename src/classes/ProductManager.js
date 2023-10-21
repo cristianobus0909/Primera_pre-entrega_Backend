@@ -106,7 +106,7 @@ class ProductManager {
     }
 }
 
-const productManager = new ProductManager('../products.json')
+const productManager = new ProductManager('./products.json');
 
-export default ProductManager;
+export default productManager;
 

@@ -38,21 +38,35 @@ routerProducts.post('/', (req, res) => {
     const {
         title,
         description,
-        code,
         price,
-        status,
-        stock,
         category,
+        status,
         thumbnails,
+        code,
+        stock
     } = req.body;
 
-    if (!title || !description || !price || !category || !thumbnails || !code || stock === undefined) {
+    if (!title || !description || !price || !category || !status || !thumbnails || !code || stock === undefined) {
         res.status(400).json({ error: 'Todos los campos son requeridos' });
-    } else {
-
-        productManager.addProduct(title, description, price, thumbnails, code, stock);
-        res.status(201).json({ message: 'Producto agregado con éxito' });
+    }else {
+        productManager.addProduct(title, description, price, category, status, thumbnails, code, stock);
     }
+    
+    res.status(201).json({ message: 'Producto agregado con éxito' });
+    
+});
+routerProducts.put('/:pid',(req, res)=>{
+    const productId = parseInt(req.params.pid);
+    const updatedFields = req.body;
+    productManager.updateProduct(productId, updatedFields);
+
+    res.status(200).json({ message: 'Producto actualizado con éxito' });
+});
+routerProducts.delete('/:pid',(req, res)=>{
+    const productId = parseInt(req.params.pid);
+    productManager.deleteProduct(productId);
+
+    res.status(200).json({ message: 'Producto eliminado con éxito' });
 });
 
 

@@ -48,6 +48,6 @@ class CartManager {
         return false;
     }
 }
-const cartManager = new CartManager('../carts.json');
+const cartManager = new CartManager('./carts.json');
 
-export default CartManager;
+export default cartManager;

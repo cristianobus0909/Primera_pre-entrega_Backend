@@ -1,53 +1,72 @@
 
+import productManager from './ProductManager.js';
 import fs from 'fs'
 
 
 class CartManager {
     constructor(cartDataPath) {
-    this.cartDataPath = cartDataPath;
-    }
+        this.cartDataPath = cartDataPath;
+        this.carts = [];
+    };
 
     createCart() {
-        const cartId = generateUniqueId();
-        const cartData = { id: cartId, products: [] };
-        const cartDataFile = path.join(this.cartDataPath, `${cartId}.json`);
-        fs.writeFileSync(cartDataFile, JSON.stringify(cartData), "utf8");
-        return cartId;
-    }
-
-    listCartProducts(cartId) {
-        const cartDataFile = path.join(this.cartDataPath, `${cartId}.json`);
-
-        if (fs.existsSync(cartDataFile)) {
-            const cartData = JSON.parse(fs.readFileSync(cartDataFile, "utf8"));
-        return cartData.products;
+        try {
+            const generateUniqueId = Math.floor(Math.random() * 1000000);
+            const newCart = { id: generateUniqueId, products: [] };
+            fs.writeFileSync(this.cartDataPath, JSON.stringify(newCart, null, 2), 'utf-8');
+            return newCart;
+            } catch (error) {
+            console.error('Error al crear el carrito', error);
+            }  
+    };
+    readCarts(cartId) {
+        try {
+            const data = fs.readFileSync(this.cartDataPath, 'utf-8');
+            const cartsFromFile = JSON.parse(data);
+            const cartFound = cartsFromFile.find((cart) => cart.id === cartId);
+            if(!cartFound){
+                console.log(`Carrito con id:${cartId} no encontrado.`);
+                return;
+            }else{
+                console.log('Carrito encontrado')
+            }
+            return cartFound;
+        } catch (error) {
+            console.error("Error al leer el archivo:", error);
+            return [];
         }
-
-        return [];
-    }
+    };
 
     addProductToCart(cartId, productId, quantity) {
-        const cartDataFile = path.join(this.cartDataPath, `${cartId}.json`);
+        try {
+            const data = fs.readFileSync(this.cartDataPath, 'utf-8');
+            const cartsFromFile = JSON.parse(data);
+            const cartFound = cartsFromFile.find((cart) => cart.id === cartId);
+    
+            if (!cartFound) {
+                console.log(`Carrito con id: ${cartId} no encontrado.`);
+                return false;
+            }
+            const existingProduct = cartFound.products.find((product) => product.id === productId);
 
-        if (fs.existsSync(cartDataFile)) {
-            const cartData = JSON.parse(fs.readFileSync(cartDataFile, "utf8"));
-            const existingProductIndex = cartData.products.findIndex(
-            (product) => product.id === productId
-            );
-            if (existingProductIndex !== -1) {
-                cartData.products[existingProductIndex].quantity += quantity;
+            if (existingProduct) {
+                existingProduct.quantity += quantity;
             } else {
-            
-                cartData.products.push({ id: productId, quantity });
+                cartFound.products.push({ id: productId, quantity });
             }
 
-            fs.writeFileSync(cartDataFile, JSON.stringify(cartData), "utf8");
-            return true;
-        }
+            fs.writeFileSync(this.cartDataPath, JSON.stringify(cartsFromFile, null, 2), 'utf-8');
 
-        return false;
+            console.log(`Producto con id: ${productId} agregado al carrito con id: ${cartId}`);
+            return true;
+        } catch (error) {
+            console.error("Error al leer o escribir en el archivo:", error);
+            return false;
+        }
     }
+    
+
 }
-const cartManager = new CartManager('./carts.json');
+const cartManager = new CartManager('../carts.json');
 
 export default cartManager;

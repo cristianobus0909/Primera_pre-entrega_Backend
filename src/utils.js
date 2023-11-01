@@ -4,8 +4,6 @@ import {fileURLToPath} from 'url'
 import { dirname } from 'path';
 import path from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -25,8 +23,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
-app.post('/subir', upload.single('miArchivo'), (req, res)=>{
+app.post('/subir', upload.single('miArchivo'), (req, res, next)=>{
 
     const file = req.file;
     if(!file){
@@ -37,10 +34,8 @@ app.post('/subir', upload.single('miArchivo'), (req, res)=>{
     }
     res.send(`archivo sudido exitosamente`);
 });
-const puerto = 8081;
-const server = app.listen(puerto, ()=>{
-console.log('servidor activo');
-});
-server.on('error', error => console.log('error en servidor'));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default __dirname;

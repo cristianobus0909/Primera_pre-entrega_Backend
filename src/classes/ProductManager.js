@@ -9,42 +9,55 @@ class ProductManager {
         this.autoIncrementId = 1;
     }
 
-    addProduct(title, description, price, category, status, thumbnails, code, stock) {
-        
-        if (!title || !description || !price || !category || !thumbnails || !code || stock === undefined) {
-        console.log("Todos los campos son obligatorios.");
-        return;
-        }
-        
-        if (this.products.some((product) => product.code === code)) {
-            console.log(`El producto con código ${code} ya existe.`);
+    addProduct(title, description, price, category, status = true, thumbnails, code, stock) {
+        if (!title || !description || !price || !category || !thumbnails || !code || stock === undefined ) {
+            console.log("Todos los campos son obligatorios.");
             return;
         }
-
-        const newProduct = {
-            id: this.autoIncrementId++,
-            title,
-            description,
-            price,
-            category,
-            status: true,
-            thumbnails,
-            code,
-            stock,
-            quantity: 1
-        };
-        
+        if(this.products.some((product)=>product.code === code)){
+            console.log(`El producto con el codigo:${code}, ya exixte.`);
+            return;
+        }
+    
+        let newProduct;
+    
+        const existingProduct = this.products.find((product) => product.code === code);
+    
+        if (existingProduct) {
+            existingProduct.quantity++;
+            console.log(`El producto con el código ${code} ahora tiene ${existingProduct.quantity} unidades.`);
+        } else {
+            newProduct = {
+                id: this.autoIncrementId++,
+                title,
+                description,
+                price,
+                category,
+                status,
+                thumbnails,
+                code,
+                stock,
+                quantity: 1 
+            };
+            this.products.push(newProduct);
+        }
+    
         try {
             const data = fs.readFileSync(this.path, 'utf-8');
             const productsFromFile = JSON.parse(data);
-            const newAddProduct = [...productsFromFile, newProduct];
-            this.products.push(newAddProduct)
-            fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2), 'utf-8');
-            
+            if (existingProduct) {
+                const existingProductIndex = productsFromFile.findIndex((product) => product.code === code);
+                productsFromFile[existingProductIndex] = existingProduct;
+            } else {
+                productsFromFile.push(newProduct);
+            }
+            fs.writeFileSync(this.path, JSON.stringify(productsFromFile, null, 2), 'utf-8');
         } catch (error) {
             console.error("Error al leer o escribir en el archivo:", error);
         }
+    
     }
+    
     
     getProducts() {
         try {
@@ -72,18 +85,18 @@ class ProductManager {
             return null;
         }
     }
-    updateProduct(id, updatedFields) {
+    updateProduct(productId, updatedFields) {
         
         try {
             const data = fs.readFileSync(this.path, 'utf-8');
             let productsFromFile = JSON.parse(data);
             
-            const productIndex = productsFromFile.findIndex((product) => product.id === id);
+            const productIndex = productsFromFile ? productsFromFile.findIndex((product) => product.id === productId) : -1;
             if (productIndex === -1) {
                 console.log("Producto no encontrado.");
                 return;
             }
-            updatedFields.id = id;
+            updatedFields.id = productId;
 
             productsFromFile[productIndex] = {
                 ...productsFromFile[productIndex],

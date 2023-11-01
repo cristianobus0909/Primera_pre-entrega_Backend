@@ -6,15 +6,19 @@ const routerCarts = express.Router();
 
 routerCarts.use(bodyParser.json());
 
-routerCarts.post("/", (req, res) => {
-    const newCartId = cartManager.createCart();
-    res.json({ cartId: newCartId });
-});
 
+routerCarts.post("/", async (req, res) => {
+    try {
+        const newCart = await cartManager.createCart();
+        res.status(200).json({ newCart });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear el carrito' });
+    }
+});
 
 routerCarts.get("/:cid", (req, res) => {
     const cartId = req.params.cid;
-    const cartProducts = cartManager.listCartProducts(cartId);
+    const cartProducts = cartManager.readCarts(cartId);
     res.json(cartProducts);
 });
 
@@ -23,8 +27,6 @@ routerCarts.post("/:cid/product/:pid", (req, res) => {
     const cartId = req.params.cid;
     const productId = req.params.pid;
     const quantity = req.body.quantity;
-
-
     const result = cartManager.addProductToCart(cartId, productId, quantity);
 
     if (result) {

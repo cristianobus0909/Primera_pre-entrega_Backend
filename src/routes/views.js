@@ -6,4 +6,5 @@ routerViews.get('/', (req, res)=>{
     res.render('index',{})
 });
 
+
 export default routerViews;

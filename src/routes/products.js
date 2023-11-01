@@ -30,6 +30,7 @@ routerProducts.get('/:pid',(req, res)=>{
     if (product) {
         res.json(product);
     } else {
+        
         res.status(404).json({ error: 'Producto no encontrado' });
     }
 })
@@ -46,7 +47,7 @@ routerProducts.post('/', (req, res) => {
         stock
     } = req.body;
 
-    if (!title || !description || !price || !category || !status || !thumbnails || !code || stock === undefined) {
+    if (!title || !description || !price || !category || !status || !thumbnails || !code || stock === undefined ) {
         res.status(400).json({ error: 'Todos los campos son requeridos' });
     }else {
         productManager.addProduct(title, description, price, category, status, thumbnails, code, stock);

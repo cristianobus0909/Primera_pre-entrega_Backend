@@ -13,15 +13,17 @@ import mongoose from 'mongoose';
 
 const app = express();
 const puerto = 8080;
-const httpServer = http.createServer(app);
-const socketServer = new Server(httpServer)
+
+const server = http.createServer(app);
+const io = new Server(server)
 
 app.engine('handlebars', handlebars.engine());
-app.set('views', path.join(__dirname + '/views'));
+app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
 
-app.use('/static', express.static(__dirname + '/public'));
-app.use('/', routerViews);
+app.use('/static', express.static(path.join(__dirname, 'public')));
+
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -30,6 +32,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/products', routerProducts);
 app.use('/api/carts', routerCarts);
 app.use('/api/users', usersRouter);
+app.use('/', routerViews);
+
+
+io.on('connection', socket =>{
+    console.log('Nuevo cliente conectado')
+    socket.on('message', data=>{
+        console.log(data)
+    })
+});
 
 
 const url = 'mongodb+srv://clbcristian:tpeyLRnudLy27oi2@cluster0.jpsemmz.mongodb.net/?retryWrites=true&w=majority'
@@ -45,9 +56,3 @@ mongoose.connect(url, {dbName: 'admnin'})
     });
 
 
-socketServer.on('connection', socket =>{
-    console.log('Nuevo cliente conectado')
-    socket.on('message', data=>{
-        console.log(data)
-    })
-});
